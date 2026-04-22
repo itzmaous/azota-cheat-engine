@@ -1,0 +1,499 @@
+/* ═══════════════════════════════════════════════
+   AZOTA HACK v3.0 — style.css
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --azh-bg:        rgba(8, 10, 22, 0.97);
+  --azh-bg2:       rgba(14, 18, 36, 0.97);
+  --azh-border:    #1565c0;
+  --azh-border2:   #1e3a5f;
+  --azh-accent:    #42a5f5;
+  --azh-accent2:   #64b5f6;
+  --azh-text:      #b3e5ff;
+  --azh-text2:     #90caf9;
+  --azh-green:     #81c784;
+  --azh-red:       #ef5350;
+  --azh-yellow:    #ffd54f;
+  --azh-dim:       #546e7a;
+  --azh-input-bg:  rgba(6, 12, 28, 0.85);
+  --azh-radius:    10px;
+  --azh-radius-sm: 6px;
+  --azh-glow:      0 0 24px rgba(30, 136, 229, 0.3);
+}
+
+/* ── Panel ─────────────────────────────────────── */
+#azhPanel {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 340px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: linear-gradient(160deg, var(--azh-bg), var(--azh-bg2));
+  color: var(--azh-text);
+  font-family: 'Segoe UI', system-ui, monospace;
+  font-size: 13px;
+  padding: 14px;
+  border: 1px solid var(--azh-border);
+  border-radius: 14px;
+  z-index: 9999999;
+  box-shadow: var(--azh-glow), 0 12px 40px rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  transition: box-shadow 0.3s;
+  scrollbar-width: thin;
+  scrollbar-color: var(--azh-border) transparent;
+}
+#azhPanel::-webkit-scrollbar { width: 4px; }
+#azhPanel::-webkit-scrollbar-thumb { background: var(--azh-border); border-radius: 4px; }
+
+/* ── Header ────────────────────────────────────── */
+.azh-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  cursor: move;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--azh-border2);
+  user-select: none;
+}
+.azh-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--azh-accent2);
+  text-shadow: 0 0 10px var(--azh-accent);
+  letter-spacing: 1px;
+}
+.azh-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #0d47a1, var(--azh-accent));
+  color: #fff;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+/* ── Tabs ───────────────────────────────────────── */
+.azh-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.azh-tab {
+  flex: 1;
+  padding: 5px 2px;
+  border: 1px solid var(--azh-border2);
+  border-radius: var(--azh-radius-sm);
+  background: transparent;
+  color: var(--azh-dim);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.azh-tab:hover { border-color: var(--azh-accent); color: var(--azh-accent2); }
+.azh-tab.active {
+  background: linear-gradient(135deg, #0d47a1 0%, var(--azh-accent) 100%);
+  border-color: var(--azh-accent);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(66,165,245,0.4);
+}
+
+/* ── Tab panes ─────────────────────────────────── */
+.azh-pane { display: none; }
+.azh-pane.active { display: block; }
+
+/* ── Section label ─────────────────────────────── */
+.azh-label {
+  font-size: 10px;
+  color: var(--azh-accent);
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  margin: 10px 0 5px;
+  font-weight: 600;
+}
+
+/* ── Inputs ────────────────────────────────────── */
+.azh-input {
+  width: 100%;
+  padding: 6px 9px;
+  background: var(--azh-input-bg);
+  color: var(--azh-text);
+  border: 1px solid var(--azh-border);
+  border-radius: var(--azh-radius-sm);
+  outline: none;
+  font-size: 12px;
+  margin-bottom: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+.azh-input:focus {
+  border-color: var(--azh-accent2);
+  box-shadow: 0 0 6px rgba(66,165,245,0.3);
+}
+.azh-input::placeholder { color: var(--azh-dim); }
+
+textarea.azh-input {
+  height: 80px;
+  resize: vertical;
+  font-family: monospace;
+  font-size: 11px;
+  color: #a5d6a7;
+  line-height: 1.5;
+}
+
+/* ── Row helpers ───────────────────────────────── */
+.azh-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+.azh-row .azh-input { margin-bottom: 0; }
+
+/* ── Buttons ───────────────────────────────────── */
+.azh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 10px;
+  border: none;
+  border-radius: var(--azh-radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.azh-btn:active { transform: scale(0.97); }
+
+.azh-btn-primary {
+  background: linear-gradient(90deg, #0d47a1, var(--azh-accent));
+  color: #fff;
+  box-shadow: 0 0 10px rgba(66,165,245,0.35);
+}
+.azh-btn-primary:hover { filter: brightness(1.15); transform: scale(1.02); }
+
+.azh-btn-danger {
+  background: linear-gradient(90deg, #b71c1c, var(--azh-red));
+  color: #fff;
+}
+.azh-btn-danger:hover { filter: brightness(1.15); transform: scale(1.02); }
+
+.azh-btn-ghost {
+  background: rgba(21,101,192,0.15);
+  color: var(--azh-accent2);
+  border: 1px solid var(--azh-border);
+}
+.azh-btn-ghost:hover { background: rgba(21,101,192,0.35); }
+
+.azh-btn-sm {
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 5px;
+}
+
+.azh-btn-full { width: 100%; margin-bottom: 5px; }
+
+/* ── File label as button ──────────────────────── */
+.azh-file-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 10px;
+  border: 1px solid var(--azh-border);
+  border-radius: var(--azh-radius-sm);
+  background: rgba(21,101,192,0.15);
+  color: var(--azh-accent2);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.azh-file-label:hover { background: rgba(21,101,192,0.35); }
+.azh-file-label input { display: none; }
+
+/* ── Toggle switch ─────────────────────────────── */
+.azh-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+.azh-toggle-row .azh-toggle-label {
+  font-size: 12px;
+  color: var(--azh-text2);
+}
+.azh-switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+.azh-switch input { display: none; }
+.azh-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #263238;
+  border-radius: 22px;
+  transition: .3s;
+}
+.azh-slider::before {
+  content: "";
+  position: absolute;
+  width: 16px; height: 16px;
+  left: 3px; bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .3s;
+}
+.azh-switch input:checked + .azh-slider { background: var(--azh-accent); }
+.azh-switch input:checked + .azh-slider::before { transform: translateX(22px); }
+
+/* ── Speed slider ──────────────────────────────── */
+.azh-speed-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.azh-speed-row label { font-size: 11px; color: var(--azh-text2); white-space: nowrap; }
+.azh-speed-row input[type=range] {
+  flex: 1;
+  accent-color: var(--azh-accent);
+  cursor: pointer;
+  height: 4px;
+}
+#azhSpeedVal, #azhRandVal {
+  font-size: 11px;
+  color: var(--azh-accent2);
+  min-width: 44px;
+  text-align: right;
+}
+
+/* ── Import status ─────────────────────────────── */
+#azhImportStatus {
+  font-size: 11px;
+  margin-top: 4px;
+  min-height: 15px;
+  color: var(--azh-green);
+}
+
+/* ── Answer preview ────────────────────────────── */
+#azhAnswerPreview {
+  background: var(--azh-input-bg);
+  border: 1px solid var(--azh-border2);
+  border-radius: var(--azh-radius-sm);
+  padding: 5px 7px;
+  font-size: 11px;
+  max-height: 90px;
+  overflow-y: auto;
+  margin-top: 5px;
+  display: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--azh-border) transparent;
+}
+#azhAnswerPreview::-webkit-scrollbar { width: 3px; }
+#azhAnswerPreview::-webkit-scrollbar-thumb { background: var(--azh-border); border-radius: 2px; }
+.ans-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--azh-border2);
+  gap: 6px;
+}
+.ans-item:last-child { border-bottom: none; }
+.ans-q { color: var(--azh-text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.ans-a { color: var(--azh-green); font-weight: 700; white-space: nowrap; }
+
+/* ── Stats card ────────────────────────────────── */
+.azh-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+.azh-stat-card {
+  background: var(--azh-input-bg);
+  border: 1px solid var(--azh-border2);
+  border-radius: var(--azh-radius-sm);
+  padding: 8px;
+  text-align: center;
+}
+.azh-stat-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--azh-accent2);
+  display: block;
+  line-height: 1.2;
+}
+.azh-stat-label {
+  font-size: 10px;
+  color: var(--azh-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* ── Shortcut badge ────────────────────────────── */
+.azh-shortcut-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 6px;
+}
+.azh-shortcut-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--azh-input-bg);
+  border: 1px solid var(--azh-border2);
+  border-radius: var(--azh-radius-sm);
+  padding: 5px 7px;
+  font-size: 11px;
+}
+.azh-key {
+  background: linear-gradient(135deg, #1a237e, #0d47a1);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  border-bottom: 2px solid #000;
+  white-space: nowrap;
+}
+
+/* ── Log box ───────────────────────────────────── */
+#azhLog {
+  background: var(--azh-input-bg);
+  padding: 6px 8px;
+  font-size: 11px;
+  height: 110px;
+  overflow-y: auto;
+  border: 1px solid var(--azh-border2);
+  border-radius: var(--azh-radius-sm);
+  margin-top: 8px;
+  line-height: 1.55;
+  font-family: monospace;
+  scrollbar-width: thin;
+  scrollbar-color: var(--azh-border) transparent;
+}
+#azhLog::-webkit-scrollbar { width: 3px; }
+#azhLog::-webkit-scrollbar-thumb { background: var(--azh-border); border-radius: 2px; }
+.log-ok   { color: var(--azh-green); }
+.log-err  { color: var(--azh-red); }
+.log-inf  { color: var(--azh-accent2); }
+.log-warn { color: var(--azh-yellow); }
+.log-dim  { color: var(--azh-dim); }
+
+/* ── Main action buttons ───────────────────────── */
+.azh-action-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+.azh-action-row .azh-btn { flex: 1; padding: 8px 4px; }
+.azh-action-row .azh-btn-close {
+  flex: 0 0 36px;
+  background: rgba(30,40,60,0.8);
+  color: var(--azh-accent2);
+  border: 1px solid var(--azh-border);
+  border-radius: var(--azh-radius-sm);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.azh-action-row .azh-btn-close:hover { background: rgba(21,101,192,0.3); }
+
+/* ── Divider ───────────────────────────────────── */
+.azh-divider {
+  border: none;
+  border-top: 1px solid var(--azh-border2);
+  margin: 10px 0;
+}
+
+/* ── Show button ───────────────────────────────── */
+#azhShowBtn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(8,10,22,0.88);
+  color: var(--azh-accent);
+  border: 1px solid var(--azh-border);
+  border-radius: 9px;
+  padding: 7px 14px;
+  cursor: pointer;
+  font-family: 'Segoe UI', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 9999999;
+  opacity: 0.35;
+  transition: opacity 0.25s, box-shadow 0.25s;
+  display: none;
+}
+#azhShowBtn:hover {
+  opacity: 1;
+  box-shadow: 0 0 14px rgba(66,165,245,0.5);
+}
+
+/* ── Report modal ──────────────────────────────── */
+#azhReportModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 99999999;
+  align-items: center;
+  justify-content: center;
+}
+#azhReportModal.open { display: flex; }
+.azh-modal-box {
+  background: linear-gradient(160deg, var(--azh-bg), var(--azh-bg2));
+  border: 1px solid var(--azh-border);
+  border-radius: 14px;
+  padding: 18px;
+  width: 460px;
+  max-width: 95vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(30,136,229,0.4);
+}
+.azh-modal-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--azh-accent2);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.azh-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.azh-report-table th {
+  background: rgba(21,101,192,0.2);
+  color: var(--azh-accent2);
+  padding: 5px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--azh-border);
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+.azh-report-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--azh-border2);
+  color: var(--azh-text);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.azh-report-table tr:last-child td { border-bottom: none; }
+.azh-report-table .cell-ans { color: var(--azh-green); font-weight: 700; }
+.azh-report-table .cell-num { color: var(--azh-dim); text-align: center; }
