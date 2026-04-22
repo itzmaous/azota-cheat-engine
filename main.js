@@ -428,120 +428,124 @@ TXT (mỗi dòng): câu hỏi = đáp án
   };
 
   /* ── Main flow ──────────────────────────────────── */
+  (function reattach() {
   const flagRef = { stop: false };
   let autoFarmEnabled = false;
   let isSubmitted = false;
 
+  const getDelay = () => {
+    const base = parseInt(document.getElementById('azhSpeed').value);
+    const useRand = document.getElementById('randDelayToggle').checked;
+    const range = parseInt(document.getElementById('azhRand').value);
+    return useRand ? AZH.util.randomDelay(base, range) : base;
+  };
+
   async function runAuto() {
     flagRef.stop = false;
     isSubmitted = false;
-    log('══ Bắt đầu phiên mới ══', 'ok');
+    const log = (msg, type='inf') => {
+      const logBox = document.getElementById('azhLog');
+      const d = document.createElement('div');
+      d.className = 'log-' + type;
+      d.textContent = '[' + new Date().toLocaleTimeString('vi',{hour12:false}) + '] ' + msg;
+      logBox.appendChild(d);
+      logBox.scrollTop = logBox.scrollHeight;
+    };
 
-    // 1. Click Bắt đầu thi
+    log('══ Bắt đầu ══', 'ok');
+
+    // Bắt đầu thi
     let startBtn = Array.from(document.querySelectorAll('button'))
       .find(b => AZH.util.getText(b).includes('Bắt đầu thi'));
-
     if (startBtn && !flagRef.stop) {
-      startBtn.click();
-      log("Click 'Bắt đầu thi'", 'ok');
+      startBtn.click(); log("Click 'Bắt đầu thi'", 'ok');
       await AZH.util.wait(getDelay(), flagRef);
     } else {
-      const backBtn = Array.from(document.querySelectorAll('button'))
+      const back = Array.from(document.querySelectorAll('button'))
         .find(b => AZH.util.getText(b).includes('Quay lại'));
-      if (backBtn && !flagRef.stop) {
-        backBtn.click();
-        await AZH.util.wait(500, flagRef);
-        startBtn = Array.from(document.querySelectorAll('button'))
-          .find(b => AZH.util.getText(b).includes('Bắt đầu thi'));
-        if (startBtn && !flagRef.stop) {
-          startBtn.click();
-          log("Click 'Bắt đầu thi' (sau quay lại)", 'ok');
-          await AZH.util.wait(getDelay(), flagRef);
-        }
-      }
+      if (back) { back.click(); await AZH.util.wait(500, flagRef); }
+      startBtn = Array.from(document.querySelectorAll('button'))
+        .find(b => AZH.util.getText(b).includes('Bắt đầu thi'));
+      if (startBtn && !flagRef.stop) { startBtn.click(); log("Click 'Bắt đầu thi'", 'ok'); await AZH.util.wait(getDelay(), flagRef); }
     }
     if (flagRef.stop) return log('Dừng.', 'err');
 
-    // 2. Điền tên / lớp
+    // Điền tên/lớp
     const nameInput  = AZH.detector.findInputByLabel('họ và tên') || AZH.detector.findInputByLabel('tên');
     const classInput = AZH.detector.findInputByLabel('lớp');
-    const uName  = document.getElementById('inpName').value.trim()  || 'Student_' + (Math.random() * 9000 + 1000 | 0);
+    const uName  = document.getElementById('inpName').value.trim()  || 'Student_' + (Math.random()*9000+1000|0);
     const uClass = document.getElementById('inpClass').value.trim() || '8T3';
-
-    if (nameInput && classInput) {
-      AZH.util.setValue(nameInput, uName);
-      AZH.util.setValue(classInput, uClass);
-      log(`Điền: ${uName} | ${uClass}`, 'ok');
-    } else if (nameInput) {
-      AZH.util.setValue(nameInput, uName);
-      log(`Điền tên: ${uName}`, 'ok');
-    } else if (classInput) {
-      AZH.util.setValue(classInput, uClass);
-      log(`Điền lớp: ${uClass}`, 'ok');
-    } else {
-      log('Không tìm thấy ô tên/lớp', 'dim');
-    }
+    if (nameInput && classInput) { AZH.util.setValue(nameInput, uName); AZH.util.setValue(classInput, uClass); log('Điền: '+uName+' | '+uClass,'ok'); }
+    else if (nameInput) { AZH.util.setValue(nameInput, uName); log('Điền tên: '+uName,'ok'); }
+    else if (classInput) { AZH.util.setValue(classInput, uClass); log('Điền lớp: '+uClass,'ok'); }
 
     if (nameInput || classInput) {
-      const cfBtn = Array.from(document.querySelectorAll('button'))
-        .find(b => AZH.util.getText(b).includes('Xác nhận'));
-      if (cfBtn && !flagRef.stop) { cfBtn.click(); log("Click 'Xác nhận'", 'ok'); }
+      const cf = Array.from(document.querySelectorAll('button')).find(b => AZH.util.getText(b).includes('Xác nhận'));
+      if (cf && !flagRef.stop) { cf.click(); log("Click 'Xác nhận'",'ok'); }
       await AZH.util.wait(getDelay(), flagRef);
     }
-    if (flagRef.stop) return log('Dừng.', 'err');
+    if (flagRef.stop) return log('Dừng.','err');
 
-    // 3. Trả lời
-    if (Object.keys(answerKey).length === 0) {
-      log('⚠ Chưa có đáp án! Vào tab Đáp án để import.', 'warn');
-    } else {
+    // Trả lời
+    const answerKey = window._azhAnswerKey || {};
+    if (!Object.keys(answerKey).length) { log('⚠ Chưa có đáp án!','warn'); }
+    else {
       const { count, total, results } = await AZH.engine.answerAll(answerKey, flagRef, getDelay);
-      log(`Đã chọn ${count}/${total} câu`, count > 0 ? 'ok' : 'warn');
-
-      // Cập nhật report + stats
+      log('Đã chọn '+count+'/'+total+' câu', count>0?'ok':'warn');
       AZH.report.build(results);
       AZH.stats.addRun(count, total);
-      updateStatsUI(count, total);
-      updateKeyStatus();
+      document.getElementById('statSessions').textContent = AZH.stats.sessions;
+      document.getElementById('statAnswered').textContent = count;
+      document.getElementById('statRate').textContent = total>0 ? Math.round(count/total*100)+'%' : '—';
     }
-    if (flagRef.stop) return log('Dừng trước nộp bài.', 'err');
+    if (flagRef.stop) return log('Dừng trước nộp.','err');
 
-    // 4. Nộp bài
-    const autoSubmit = document.getElementById('autoSubmitToggle').checked;
-    if (autoSubmit && !isSubmitted) {
-      const submitMain = Array.from(document.querySelectorAll('button'))
-        .find(b => AZH.util.getText(b) === 'Nộp bài' && !b.closest('.mat-mdc-dialog-surface'));
-      if (submitMain && !flagRef.stop) {
-        submitMain.click();
-        isSubmitted = true;
-        log("Click 'Nộp bài'", 'ok');
-        await AZH.util.wait(700, flagRef);
-      }
-      const submitDialog = Array.from(document.querySelectorAll('.mat-mdc-dialog-surface button'))
-        .find(b => AZH.util.getText(b) === 'Nộp bài');
-      if (submitDialog && !flagRef.stop) {
-        submitDialog.click();
-        log('Xác nhận nộp bài ✓', 'ok');
-      }
-    } else if (!autoSubmit) {
-      log('Auto-submit tắt — tự nộp tay nhé', 'warn');
+    // Nộp bài
+    if (document.getElementById('autoSubmitToggle').checked && !isSubmitted) {
+      const sm = Array.from(document.querySelectorAll('button'))
+        .find(b => AZH.util.getText(b)==='Nộp bài' && !b.closest('.mat-mdc-dialog-surface'));
+      if (sm && !flagRef.stop) { sm.click(); isSubmitted=true; log("Click 'Nộp bài'",'ok'); await AZH.util.wait(700, flagRef); }
+      const sd = Array.from(document.querySelectorAll('.mat-mdc-dialog-surface button'))
+        .find(b => AZH.util.getText(b)==='Nộp bài');
+      if (sd && !flagRef.stop) { sd.click(); log('Xác nhận nộp ✓','ok'); }
     }
 
-    if (flagRef.stop) return;
-
-    // 5. Thông báo
-    if (document.getElementById('notifyToggle').checked) {
-      try { new Notification('⚡ Azota Hack', { body: 'Hoàn thành!' }); } catch (_) {}
-    }
-
+    autoFarmEnabled = document.getElementById('autoFarmToggle').checked;
     if (autoFarmEnabled && !flagRef.stop) {
-      log('Auto-Farm: restart sau 2.5s…', 'inf');
+      log('Auto-Farm: restart sau 2.5s…','inf');
       await AZH.util.wait(2500, flagRef);
       if (!flagRef.stop) runAuto();
     } else {
-      log('══ Hoàn thành ══', 'ok');
+      log('══ Hoàn thành ══','ok');
     }
   }
 
+  document.getElementById('btnAzhRun').onclick = runAuto;
+  document.getElementById('btnAzhStop').onclick = () => {
+    flagRef.stop = true;
+    document.getElementById('autoFarmToggle').checked = false;
+    const logBox = document.getElementById('azhLog');
+    const d = document.createElement('div');
+    d.className = 'log-err';
+    d.textContent = '['+new Date().toLocaleTimeString('vi',{hour12:false})+'] Đã dừng.';
+    logBox.appendChild(d);
+  };
+
+  // Keyboard shortcuts
+  document.onkeydown = e => {
+    if (['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
+    if (e.key==='F2') { e.preventDefault(); runAuto(); }
+    if (e.key==='F3') { e.preventDefault(); document.getElementById('btnAzhStop').click(); }
+    if (e.key==='F4') { e.preventDefault(); const p=document.getElementById('azhPanel'); p.style.display=p.style.display==='none'?'block':'none'; }
+    if (e.key==='Escape') { flagRef.stop=true; }
+  };
+
+  console.log('✅ Events re-attached. Bấm Run hoặc F2 để chạy.');
+
+  // Expose answerKey — sync từ window.AZH nếu có
+  // Mày cần paste answerKey vào đây hoặc dùng import trong panel
+  window._reattachRunAuto = runAuto;
+})();
   /* ── Button events ──────────────────────────────── */
   document.getElementById('btnAzhRun').onclick = runAuto;
 
