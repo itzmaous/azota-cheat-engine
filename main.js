@@ -293,19 +293,23 @@ TXT (mỗi dòng): câu hỏi = đáp án
   }
 
   function loadAnswerKey(raw) {
-    try {
-      const parsed = AZH.parser.parse(raw);
-      const n = Object.keys(parsed).length;
-      if (n === 0) { setImportStatus('❌ Không tìm thấy câu nào – kiểm tra format', false); return; }
-      answerKey = parsed;
-      setImportStatus(`✅ OK — ${n} câu`);
-      renderPreview();
-      log(`Import: ${n} câu đáp án`, 'ok');
-    } catch (e) {
-      setImportStatus('❌ Lỗi: ' + e.message, false);
-      log('Parse thất bại: ' + e.message, 'err');
-    }
-  }
+     try {
+       const parsed = AZH.parser.parse(raw);
+       const n = Object.keys(parsed).length;
+       if (n === 0) {
+         setImportStatus('❌ Không tìm thấy câu nào – kiểm tra format', false);
+         return;
+       }
+   
+       answerKey = parsed;
+   
+       // ⭐ FIX QUAN TRỌNG
+       window._azhAnswerKey = answerKey;
+   
+       setImportStatus(`✅ OK — ${n} câu`);
+       renderPreview();
+       log(`Import: ${n} câu đáp án`, 'ok');
+     } catch (e) {
 
   /* ── Answer tab events ──────────────────────────── */
   document.getElementById('btnParseText').onclick = () => {
@@ -329,6 +333,7 @@ TXT (mỗi dòng): câu hỏi = đáp án
     const n = Object.keys(detected).length;
     if (n === 0) { log('Không detect được đáp án nào từ DOM', 'warn'); return; }
     Object.assign(answerKey, detected);
+    window._azhAnswerKey = answerKey;
     const raw = JSON.stringify(answerKey, null, 2);
     document.getElementById('azhAnswerText').value = raw;
     setImportStatus(`🔍 Detect được ${n} câu từ DOM`);
@@ -460,6 +465,11 @@ TXT (mỗi dòng): câu hỏi = đáp án
     if (startBtn && !flagRef.stop) {
       startBtn.click(); log("Click 'Bắt đầu thi'", 'ok');
       await AZH.util.wait(getDelay(), flagRef);
+       // ⭐ CHỜ LOAD CÂU HỎI
+      for (let i = 0; i < 25; i++) {
+        if (document.querySelector('.question-standalone-box')) break;
+        await AZH.util.sleep(200);
+      }
     } else {
       const back = Array.from(document.querySelectorAll('button'))
         .find(b => AZH.util.getText(b).includes('Quay lại'));
@@ -501,7 +511,7 @@ TXT (mỗi dòng): câu hỏi = đáp án
     if (flagRef.stop) return log('Dừng trước nộp.','err');
 
     // Nộp bài
-    if (document.getElementById('autoSubmitToggle').checked && !isSubmitted) {
+    if (document.getElementById('autoSubmitToggle').checked && !isSubmitted && Object.keys(window._azhAnswerKey||{}).length) {
       const sm = Array.from(document.querySelectorAll('button'))
         .find(b => AZH.util.getText(b)==='Nộp bài' && !b.closest('.mat-mdc-dialog-surface'));
       if (sm && !flagRef.stop) { sm.click(); isSubmitted=true; log("Click 'Nộp bài'",'ok'); await AZH.util.wait(700, flagRef); }
@@ -547,8 +557,6 @@ TXT (mỗi dòng): câu hỏi = đáp án
   window._reattachRunAuto = runAuto;
 })();
   /* ── Button events ──────────────────────────────── */
-  document.getElementById('btnAzhRun').onclick = runAuto;
-
   document.getElementById('btnAzhStop').onclick = () => {
     flagRef.stop = true;
     autoFarmEnabled = false;
